@@ -2,6 +2,10 @@ import numpy as np
 import pickle as pk
 
 
+#TODO: Add softmax
+#TODO: Add cross enropy loss
+
+
 class NeuralNetwork(object):
     '''General class for creating a Neural Network with numpy'''
 
@@ -229,7 +233,7 @@ class NeuralNetwork(object):
 
             if notification_frequency is not None and i % notification_frequency == 0:
                 print("Beginning %sth epoch." % (i))
-                print("Total batch error: %s" % (np.sum(self.error(batch_y))))                
+                print("Total batch error: %s" % (np.sum(self.error(batch_y))))
 
             if(method == 'gradient_descent'):
                 self.gradient_descent(batch_y, step_size)

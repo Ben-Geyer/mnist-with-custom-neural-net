@@ -12,6 +12,6 @@ for i in range(y.shape[0]):
 
 x = x / 255
 
-nn = NN(layers = [784, 512, 10], activations = ['relu', 'sigmoid'])
-nn.train(x[0:2], y[0:2], step_size = 0.0001, epochs = 10000, batch_size = 2, method = "gradient_descent", notification_frequency = 100)
+nn = NN(layers = [784, 800, 10], activations = ['sigmoid', 'sigmoid'])
+nn.train(x, y, step_size = 0.001, epochs = 40000, batch_size = 16, method = "adam", notification_frequency = 100)
 nn.save()

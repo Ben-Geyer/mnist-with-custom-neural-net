@@ -34,7 +34,7 @@ for i in range(y.shape[0]):
 
 x = x / 255
 
-nn = NN(layers = [784, 128, 32, 10], activations = ['relu', 'relu', 'sigmoid'])
+nn = NN(layers = [784, 800, 10], activations = ['sigmoid', 'sigmoid'])
 nn.load()
 
 res = vout(nn.fprop(x))
