@@ -34,13 +34,13 @@ for i in range(y.shape[0]):
 
 x = x / 255
 
-nn = NN(layers = [784, 800, 10], activations = ['sigmoid', 'sigmoid'])
+nn = NN(layers = [784, 800, 10], activations = ['sigmoid', 'softmax'])
 nn.load()
 
 res = vout(nn.fprop(x))
 
 print("Total error: ")
-print(np.sum(nn.error(y)))
+print(np.sum(nn.cross_entropy(y)))
 print("Number correct: ")
 print(num_correct(res, y))
-print(corr(res, y)[0:20])
+print(corr(res, y)[0:200])

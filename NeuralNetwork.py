@@ -2,10 +2,6 @@ import numpy as np
 import pickle as pk
 
 
-#TODO: Add softmax
-#TODO: Add cross enropy loss
-
-
 class NeuralNetwork(object):
     '''General class for creating a Neural Network with numpy'''
 
@@ -84,10 +80,28 @@ class NeuralNetwork(object):
         return vf(x)
 
 
+    def softmax(self, x, deriv = False, y = None):
+        if(deriv == True):
+            er = self.cross_entropy(y, True)
+            out = np.zeros(er.shape)
+            for i in range(x.shape[0]):
+                s = x[i].reshape(-1,1)
+                out[i] += np.dot(er[i], (np.diagflat(s) - np.dot(s, s.T)))
+            return out
+        return np.exp(x) / np.sum(np.exp(x), axis = 1)[:,None]
+
+
     def error(self, y, deriv = False):
         if(deriv == True):
             return 2 * (self.l[-1] - y)
         return (self.l[-1] - y) ** 2
+
+
+    def cross_entropy(self, y, deriv = False):
+        if deriv == True:
+            return -y / self.l[-1]
+        x = np.clip(self.l[-1], 1e-12, 1. - 1e-12)
+        return -y * np.log(x)
 
 
     def fprop(self, x):
@@ -104,7 +118,10 @@ class NeuralNetwork(object):
         w_delta = [0 for i in range(self.nlayers - 1)]
         b_delta = [0 for i in range(self.nlayers - 1)]
 
-        l_delta[-1] = self.error(y, True) * getattr(self, self.activations[-1])(self.l[-1], True)
+        if self.activations[-1] == 'softmax':
+            l_delta[-1] = self.softmax(self.l[-1], True, y)
+        else:
+            l_delta[-1] = self.error(y, True) * getattr(self, self.activations[-1])(self.l[-1], True)
 
         for i in range(self.nlayers - 2):
             l_delta[-2 - i] = np.dot(l_delta[-1 - i], self.syn[-1 - i].T) * getattr(self, self.activations[-2 - i])(self.l[-2 - i], True)
@@ -233,7 +250,10 @@ class NeuralNetwork(object):
 
             if notification_frequency is not None and i % notification_frequency == 0:
                 print("Beginning %sth epoch." % (i))
-                print("Total batch error: %s" % (np.sum(self.error(batch_y))))
+                if self.activations[-1] == 'softmax':
+                    print("Total batch error: %s" % (np.sum(self.cross_entropy(batch_y))))
+                else:
+                    print("Total batch error: %s" % (np.sum(self.error(batch_y))))
 
             if(method == 'gradient_descent'):
                 self.gradient_descent(batch_y, step_size)
